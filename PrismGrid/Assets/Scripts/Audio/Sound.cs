@@ -5,6 +5,8 @@ using UnityEngine.Audio;
 
 public enum SoundList
 {
+    WrongSpot,
+    CorrectSpot,
     PlayerShoot,
     PlayerBulletHit1,
     PlayerBulletHit2,

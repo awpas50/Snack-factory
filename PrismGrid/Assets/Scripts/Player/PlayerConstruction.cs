@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerConstruction : MonoBehaviour
 {
-    // Start is called before the first frame update
+    public GameObject prism;
     void Start()
     {
         
@@ -13,6 +13,5 @@ public class PlayerConstruction : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
     }
 }
