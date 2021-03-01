@@ -35,6 +35,8 @@ public class GameManager : MonoBehaviour
     [Header("Do not edit")]
     [SerializeField] private BuildingGrid buildingGrid1;
     [SerializeField] private BuildingGrid buildingGrid2;
+    [SerializeField] private GameObject destructionGrid;
+    private bool destructionMode = false;
     public GameObject selectedBuilding;
     public int selectedBuildingCost;
     [SerializeField] private Vector3 constructingPosition;
@@ -146,9 +148,22 @@ public class GameManager : MonoBehaviour
                 //AudioManager.instance.Play(SoundList.WrongSpot);
             }
         }
+        //destruct
+        if(destructionMode)
+        {
+            destructionGrid.SetActive(true);
+        }
+        else
+        {
+            destructionGrid.SetActive(false);
+        }
         if (Input.GetMouseButtonDown(1) && selectedBuilding)
         {
             selectedBuilding = null;
+        }
+        if(Input.GetMouseButtonDown(1) && destructionMode)
+        {
+            destructionMode = false;
         }
     }
 
@@ -186,7 +201,8 @@ public class GameManager : MonoBehaviour
     }
     public void SelectBuilding1()
     {
-        if(selectedBuilding == building1.model)
+        destructionMode = false;
+        if (selectedBuilding == building1.model)
         {
             selectedBuilding = null;
         }
@@ -198,6 +214,7 @@ public class GameManager : MonoBehaviour
     }
     public void SelectBuilding2()
     {
+        destructionMode = false;
         if (selectedBuilding == building2.model)
         {
             selectedBuilding = null;
@@ -207,5 +224,10 @@ public class GameManager : MonoBehaviour
             selectedBuilding = building2.model;
             selectedBuildingCost = building2.cost;
         }
+    }
+    public void SelectRubbishBin()
+    {
+        destructionMode = !destructionMode;
+        selectedBuilding = null;
     }
 }

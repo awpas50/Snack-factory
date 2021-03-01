@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Tutorial : MonoBehaviour
 {
@@ -14,15 +15,18 @@ public class Tutorial : MonoBehaviour
     public GameObject enemyPrefab;
     public Transform spawnPoint;
     public GameObject spawnPath;
+    public Button rubbishBin;
     private float timer1 = 0;
     private float timer2 = 0;
     public List<GameObject> enemiesForTutorial;
     private GameObject[] allPrisms;
     private bool triggerInfinitiveWave = false;
+    private bool triggerFourthWave = false;
 
     void Start()
     {
         InvokeRepeating("GetNearbyPrisms", 0, 0.8f);
+        rubbishBin.interactable = false;
     }
 
     void GetNearbyPrisms()
@@ -79,8 +83,13 @@ public class Tutorial : MonoBehaviour
                 StartCoroutine(InfinitiveWave());
             }
             triggerInfinitiveWave = true;
+            triggerFourthWave = true;
+        }
+        if(triggerFourthWave)
+        {
+            rubbishBin.interactable = true;
             timer2 += Time.deltaTime;
-            if(timer2 < 18)
+            if (timer2 < 18)
             {
                 t4.SetActive(true);
             }
