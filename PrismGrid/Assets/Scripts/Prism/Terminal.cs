@@ -6,18 +6,13 @@ public class Terminal : MonoBehaviour
 {
     public GameObject laser;
     public float radius;
-    private GameObject[] allPrisms;
+    public GameObject[] allPrisms;
+    public List<GameObject> allPrismsInRange;
+    [SerializeField] private GameObject circle;
+
     void Start()
     {
-        InvokeRepeating("GetNearbyTerminal", 0, 0.5f);
-    }
-
-    void Update()
-    {
-        if(allPrisms.Length > 0)
-        {
-            CreateLaser();
-        }
+        InvokeRepeating("GetNearbyPrisms", 0, 0.8f);
     }
 
     private void OnDrawGizmosSelected()
@@ -26,32 +21,58 @@ public class Terminal : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, radius);
     }
 
-    void GetNearbyTerminal()
+    void GetNearbyPrisms()
     {
         allPrisms = GameObject.FindGameObjectsWithTag("Prism");
+        allPrismsInRange.Clear();
+        if (allPrisms.Length > 0)
+        {
+            for (int i = 0; i < allPrisms.Length; i++)
+            {
+                if (Vector3.Distance(transform.position, allPrisms[i].transform.position) <= radius)
+                {
+                    allPrismsInRange.Add(allPrisms[i]);
+                }
+            }
+        }
+        if (allPrismsInRange.Count > 0)
+        {
+            CreateLaser();
+        }
     }
 
     void CreateLaser()
     {
-        for (int i = 0; i < allPrisms.Length; i++)
+        for (int i = 0; i < allPrismsInRange.Count; i++)
         {
             bool connected = false;
-            for(int j = 0; j < allPrisms[i].GetComponent<Prism>().connectedTo.Count; j++ )
+            for(int j = 0; j < allPrismsInRange[i].GetComponent<Prism>().connectedTo.Count; j++ )
             {
-                if(allPrisms[i].GetComponent<Prism>().connectedTo.Contains(gameObject))
+                if(allPrismsInRange[i].GetComponent<Prism>().connectedTo.Contains(gameObject))
                 {
                     connected = true; //end function
                 }
             }
             if(!connected)
             {
-                allPrisms[i].GetComponent<Prism>().connectedTo.Add(gameObject);
+                allPrismsInRange[i].GetComponent<Prism>().connectedTo.Add(gameObject);
                 GameObject o = Instantiate(laser, transform.position, Quaternion.identity);
                 Laser laser_script = o.GetComponent<Laser>();
                 laser_script.startPoint = gameObject;
-                laser_script.endPoint = allPrisms[i];
+                laser_script.endPoint = allPrismsInRange[i];
+                laser_script.offsetX = -transform.position.x;
+                laser_script.offsetY = -transform.position.y;
                 connected = true;
             }
         }
+    }
+
+    private void OnMouseOver()
+    {
+        circle.SetActive(true);
+    }
+    private void OnMouseExit()
+    {
+        circle.SetActive(false);
     }
 }
