@@ -11,7 +11,7 @@ public class Laser : MonoBehaviour
     [HideInInspector] public float offsetY;
 
     float rechargeTimer = 0;
-    float chargeTime = 3;
+    float chargeTime = 4;
     LineRenderer lr;
     EdgeCollider2D edgeCollider;
 
@@ -47,6 +47,7 @@ public class Laser : MonoBehaviour
         // self destruct if the laser has no connection anymore
         if(!startPoint || !endPoint)
         {
+            Destroy(laserEffectRef);
             Destroy(gameObject);
         }
 

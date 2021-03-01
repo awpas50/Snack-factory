@@ -99,19 +99,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 428282509ebe7914ab2de10d2ccf8e8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  canSpawnOtherEnemies: 1
+  spawnPortal: {fileID: 0}
   originalColor: {r: 1, g: 1, b: 1, a: 1}
-  burntColor: {r: 0.9339623, g: 0.2775454, b: 0.2775454, a: 1}
+  burntColor: {r: 1, g: 0, b: 0, a: 1}
   burnEffect: {fileID: 3269746302419680474}
   speedBoostIcon: {fileID: 8404884639989606824}
   worthScore: 1
-  burnDuration: 3
+  worth: 3
+  burnDuration: 1.5
+  whichLevelIsIn: 1
   path: {fileID: 0}
   listSize: 0
   pathToFollow: []
   target: {fileID: 0}
   index: 0
   speed: 4
-  speed_original: 0
+  speed_original: 4
   speed_burnt: 1
   speed_buffed: 1
 --- !u!61 &8140301506958821085

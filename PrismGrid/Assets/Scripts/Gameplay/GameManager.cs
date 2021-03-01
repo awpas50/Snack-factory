@@ -9,11 +9,8 @@ public class GameManager : MonoBehaviour
 {
     [Header("Gameplay")]
     public static GameManager i;
-    public static bool gameEnded = false;
     public static bool roundEnd = false;
-    public static bool lose = false;
     public int waves = 1;
-    public int TotalWave = 16;
     public int currency = 10;
     public int score = 0;
     private int finalScore = 0;
@@ -24,11 +21,13 @@ public class GameManager : MonoBehaviour
     [Header("UI")]
     public TextMeshProUGUI currencyText;
     public TextMeshProUGUI scoreText;
+    public TextMeshProUGUI finalScoreText;
     public TextMeshProUGUI timeRemainingText;
     public GameObject rightPanel;
     public GameObject bgPanel;
+    public GameObject endGamePanel;
 
-    private WaveSpawner waveSpawner;
+    public WaveSpawnerAdvanced waveSpawnerAdvanced;
     private GameObject player;
     private GameObject[] enemies;
 
@@ -36,7 +35,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private BuildingGrid buildingGrid1;
     [SerializeField] private BuildingGrid buildingGrid2;
     [SerializeField] private GameObject destructionGrid;
-    private bool destructionMode = false;
+    [HideInInspector] public bool destructionMode = false;
     public GameObject selectedBuilding;
     public int selectedBuildingCost;
     [SerializeField] private Vector3 constructingPosition;
@@ -60,16 +59,12 @@ public class GameManager : MonoBehaviour
         //DEBUG
         roundEnd = false;
         player = GameObject.FindGameObjectWithTag("Player");
-        waveSpawner = FindObjectOfType<WaveSpawner>();
-        waveSpawner.enabled = true;
         player.GetComponent<PlayerMovement>().enabled = true;
-
         Time.timeScale = 1;
         roundTime = roundTime_initial;
         rightPanel.SetActive(false);
         bgPanel.SetActive(false);
-
-        
+        endGamePanel.SetActive(false);
     }
 
     private void Update()
@@ -94,7 +89,12 @@ public class GameManager : MonoBehaviour
 
         if(roundEnd)
         {
-            waveSpawner.enabled = false;
+            if(waveSpawnerAdvanced)
+            {
+                waveSpawnerAdvanced.enabled = false;
+            }
+            endGamePanel.SetActive(true);
+            finalScoreText.text = finalScore.ToString();
             player.GetComponent<PlayerMovement>().enabled = false;
         }
         if (selectedBuilding == building1.model)
@@ -119,16 +119,21 @@ public class GameManager : MonoBehaviour
             {
                 return;
             }
-            else if (buildingGrid1.canPlaceBuilding && currency >= selectedBuildingCost)
+            else if (currency < selectedBuildingCost)
             {
-                //AudioManager.instance.Play(SoundList.CorrectSpot);
-                Instantiate(selectedBuilding, buildingGrid1.transform.position, Quaternion.identity);
-                currency -= selectedBuildingCost;
+                AudioManager.instance.Play(SoundList.CannotPlace);
             }
             else if (!buildingGrid1.canPlaceBuilding && currency >= selectedBuildingCost)
             {
-                //AudioManager.instance.Play(SoundList.WrongSpot);
+                AudioManager.instance.Play(SoundList.CannotPlace);
             }
+            else if (buildingGrid1.canPlaceBuilding && currency >= selectedBuildingCost)
+            {
+                AudioManager.instance.Play(SoundList.CanPlace);
+                Instantiate(selectedBuilding, buildingGrid1.transform.position, Quaternion.identity);
+                currency -= selectedBuildingCost;
+            }
+            
         }
         //building2
         if (Input.GetMouseButtonDown(0) && buildingGrid2.gameObject.activeSelf)
@@ -137,15 +142,19 @@ public class GameManager : MonoBehaviour
             {
                 return;
             }
+            else if(currency < selectedBuildingCost)
+            {
+                AudioManager.instance.Play(SoundList.CannotPlace);
+            }
+            else if (!buildingGrid2.canPlaceBuilding)
+            {
+                AudioManager.instance.Play(SoundList.CannotPlace);
+            }
             else if (buildingGrid2.canPlaceBuilding && currency >= selectedBuildingCost)
             {
-                //AudioManager.instance.Play(SoundList.CorrectSpot);
+                AudioManager.instance.Play(SoundList.CanPlace);
                 Instantiate(selectedBuilding, buildingGrid2.transform.position, Quaternion.identity);
                 currency -= selectedBuildingCost;
-            }
-            else if (!buildingGrid2.canPlaceBuilding && currency >= selectedBuildingCost)
-            {
-                //AudioManager.instance.Play(SoundList.WrongSpot);
             }
         }
         //destruct
@@ -159,48 +168,58 @@ public class GameManager : MonoBehaviour
         }
         if (Input.GetMouseButtonDown(1) && selectedBuilding)
         {
+            AudioManager.instance.Play(SoundList.Cancel);
             selectedBuilding = null;
         }
         if(Input.GetMouseButtonDown(1) && destructionMode)
         {
+            AudioManager.instance.Play(SoundList.Cancel);
             destructionMode = false;
         }
     }
 
     public void PauseGame()
     {
+        AudioManager.instance.Play(SoundList.ButtonClick);
         Time.timeScale = 0;
         rightPanel.SetActive(true);
         bgPanel.SetActive(true);
     }
     public void ResumeGame()
     {
+        AudioManager.instance.Play(SoundList.ButtonClick);
         Time.timeScale = 1;
         rightPanel.SetActive(false);
         bgPanel.SetActive(false);
     }
     public void Quit()
     {
+        AudioManager.instance.Play(SoundList.ButtonClick);
         Application.Quit();
     }
     public void Restart()
     {
+        AudioManager.instance.Play(SoundList.ButtonClick);
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
     public void MainMenu()
     {
-        SceneManager.LoadScene("Menu");
+        AudioManager.instance.Play(SoundList.ButtonClick);
+        SceneManager.LoadScene("MainMenu");
     }
     public void LoadTutorial()
     {
+        AudioManager.instance.Play(SoundList.ButtonClick);
         SceneManager.LoadScene("Tutorial");
     }
     public void LoadMainGame()
     {
-        SceneManager.LoadScene("Tutorial");
+        AudioManager.instance.Play(SoundList.ButtonClick);
+        SceneManager.LoadScene("MainGame");
     }
     public void SelectBuilding1()
     {
+        AudioManager.instance.Play(SoundList.ButtonClick);
         destructionMode = false;
         if (selectedBuilding == building1.model)
         {
@@ -214,6 +233,7 @@ public class GameManager : MonoBehaviour
     }
     public void SelectBuilding2()
     {
+        AudioManager.instance.Play(SoundList.ButtonClick);
         destructionMode = false;
         if (selectedBuilding == building2.model)
         {
@@ -227,6 +247,7 @@ public class GameManager : MonoBehaviour
     }
     public void SelectRubbishBin()
     {
+        AudioManager.instance.Play(SoundList.ButtonClick);
         destructionMode = !destructionMode;
         selectedBuilding = null;
     }

@@ -5,16 +5,17 @@ using UnityEngine.Audio;
 
 public enum SoundList
 {
-    WrongSpot,
-    CorrectSpot,
-    PlayerShoot,
-    PlayerBulletHit1,
-    PlayerBulletHit2,
-    Dead1,
-    Dead2,
-    RoundStart,
-    PickUp,
-    Charged
+    SpeedBoosted,
+    LaserHit,
+    CannotPlace,
+    CanPlace,
+    ButtonClick,
+    DestroyBuilding,
+    Cancel,
+    EnemyReachedTheEnd,
+    LaserHit1,
+    LaserHit2,
+    LaserHit3
 }
 
 [System.Serializable]

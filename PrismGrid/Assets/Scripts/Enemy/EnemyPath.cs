@@ -4,7 +4,10 @@ using UnityEngine;
 
 public class EnemyPath : MonoBehaviour
 {
-
+    [Header("Respawn mechanic")]
+    public bool canSpawnOtherEnemies = false;
+    public GameObject spawnPortal;
+    [Header("Props")]
     //effect
     public Color originalColor;
     public Color burntColor;
@@ -13,30 +16,48 @@ public class EnemyPath : MonoBehaviour
     public SpriteRenderer speedBoostIcon;
     //state
     public int worthScore = 1;
-    private int worth = 3;
+    public int worth = 3;
     private bool isBurnt = false;
     private float burnTimer = 0;
-    [SerializeField] private float burnDuration = 3;
+    [SerializeField] private float burnDuration = 1.5f;
 
+    public int whichLevelIsIn = 1;
     public GameObject path;
     [HideInInspector] public int listSize;
     [HideInInspector] public List<Transform> pathToFollow;
     [HideInInspector] public Transform target;
     public int index = 0;
     public float speed;
-    [HideInInspector] public float speed_original;
+    public float speed_original;
     [HideInInspector] public float speed_burnt = 1;
     [HideInInspector] public float speed_buffed = 1;
     private bool addProps = false;
     void Start()
     {
-        speed_original = speed;
+        speed = Random.Range(speed * 0.9f, speed * 1.1f);
+        if (whichLevelIsIn == 1)
+        {
+            path = FindObjectOfType<WaveSpawnerAdvanced>().gameObject;
+        }
         listSize = path.transform.childCount;
         for (int i = 0; i < listSize; i++)
         {
             pathToFollow.Add(path.transform.GetChild(i));
         }
         target = pathToFollow[0];
+
+        if(canSpawnOtherEnemies)
+        {
+            spawnPortal = GameObject.FindGameObjectWithTag("Portal");
+        }
+        //DEBUG
+        //speed_burnt = 1;
+        //speed_buffed = 1;
+        //burnTimer = 0;
+        //burnEffect.SetActive(false);
+        //GetComponent<SpriteRenderer>().color = originalColor;
+        //isBurnt = false;
+        //speedBoostIcon.enabled = false;
     }
 
     void Update()
@@ -57,9 +78,24 @@ public class EnemyPath : MonoBehaviour
                 // add scores
                 if (!addProps)
                 {
+                    AudioManager.instance.Play(SoundList.EnemyReachedTheEnd);
                     GameManager.i.live -= 1;
                     GameManager.i.score += worthScore;
                     GameManager.i.currency += worth;
+
+                    if(canSpawnOtherEnemies)
+                    {
+                        GameObject self = Instantiate(gameObject, spawnPortal.transform.position, Quaternion.identity);
+                        self.GetComponent<EnemyPath>().canSpawnOtherEnemies = true;
+                        self.GetComponent<EnemyPath>().speed = Random.Range(speed_original * 0.9f, speed_original * 1.1f);
+                        self.GetComponent<EnemyPath>().speed_burnt = 1;
+                        self.GetComponent<EnemyPath>().speed_buffed = 1;
+                        self.GetComponent<EnemyPath>().burnTimer = 0;
+                        self.GetComponent<EnemyPath>().burnEffect.SetActive(false);
+                        self.GetComponent<EnemyPath>().GetComponent<SpriteRenderer>().color = originalColor;
+                        self.GetComponent<EnemyPath>().isBurnt = false;
+                        self.GetComponent<EnemyPath>().speedBoostIcon.enabled = false;
+                    }
                     addProps = true;
                 }
                 Destroy(gameObject, 0.1f);
@@ -91,6 +127,19 @@ public class EnemyPath : MonoBehaviour
         // Enemy reaction to laser:
         if (other.gameObject.tag == "Laser" && !isBurnt)
         {
+            int seed = Random.Range(0, 3);
+            switch(seed)
+            {
+                case 0:
+                    AudioManager.instance.Play(SoundList.LaserHit1);
+                    break;
+                case 1:
+                    AudioManager.instance.Play(SoundList.LaserHit2);
+                    break;
+                case 2:
+                    AudioManager.instance.Play(SoundList.LaserHit3);
+                    break;
+            }
             //80% buff
             speed_burnt = 1.8f;
             isBurnt = true;

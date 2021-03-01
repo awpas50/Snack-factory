@@ -34,6 +34,7 @@ public class DestructionGrid : MonoBehaviour
         {
             if (!IsNotColliding && canDestruct)
             {
+                AudioManager.instance.Play(SoundList.DestroyBuilding);
                 //sell building
                 Destroy(hitObjectRef);
                 //9:Prism 12:Terminal
@@ -45,6 +46,10 @@ public class DestructionGrid : MonoBehaviour
                 {
                     GameManager.i.currency += 10;
                 }
+            }
+            else if(GameManager.i.destructionMode && IsNotColliding && !canDestruct)
+            {
+                AudioManager.instance.Play(SoundList.CannotPlace);
             }
         }
     }

@@ -4,16 +4,13 @@ using UnityEngine;
 
 public class PlayerBuffCircle : MonoBehaviour
 {
-    void Start()
-    {
-        
-    }
     private void OnTriggerEnter2D(Collider2D other)
     {
-        //+40% speed buff
+        //+50% speed buff
         if(other.gameObject.tag == "Enemy")
         {
-            other.gameObject.GetComponent<EnemyPath>().speed_buffed = 1.4f;
+            AudioManager.instance.Play(SoundList.SpeedBoosted);
+            other.gameObject.GetComponent<EnemyPath>().speed_buffed = 1.5f;
             other.gameObject.GetComponent<EnemyPath>().speedBoostIcon.enabled = true;
         }
     }

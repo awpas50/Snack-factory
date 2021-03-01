@@ -9,7 +9,6 @@ public class WaveSpawner : MonoBehaviour
     public Wave[] waves;
     public Transform spawnPoint;
     public float timeBetweenWaves;
-    //public TextMeshProUGUI countDownText;
 
     private int _enemyCount;
     private float _timeBetweenEnemies;
@@ -27,7 +26,7 @@ public class WaveSpawner : MonoBehaviour
         startCountDown = true;
         // [i]: number of waves
         // [j]: determine which type of enemy to spawn
-        while (!GameManager.gameEnded && GameManager.i.waves <= GameManager.i.TotalWave)
+        while (!GameManager.roundEnd)
         {
             for (int i = 0; i < waves.Length; i++)
             {

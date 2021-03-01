@@ -109,6 +109,8 @@ public class Tutorial : MonoBehaviour
             {
                 GameObject e = Instantiate(enemyPrefab, spawnPoint.position, spawnPoint.rotation);
                 e.GetComponent<EnemyPath>().path = spawnPath;
+                e.GetComponent<EnemyPath>().canSpawnOtherEnemies = false;
+                e.GetComponent<EnemyPath>().whichLevelIsIn = 0;
                 yield return new WaitForSeconds(1);
             }
             yield return new WaitForSeconds(16);
